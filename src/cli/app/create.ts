@@ -1,6 +1,5 @@
 import { Arguments, CommandBuilder } from "yargs";
 import ora from "ora";
-import { access } from 'fs/promises';
 import chalk from "chalk";
 import sanitize from "sanitize-filename";
 import fs from 'fs-extra';
@@ -12,7 +11,7 @@ import { run } from "../../lib/common.js";
 import boxen from "boxen";
 import { useEnvironment, useOrganization, useToken } from "../../middleware/index.js";
 import { downloadFromGitHub } from "../../lib/download.js";
-import { checkPnpmPresence } from "../../lib/util.js";
+import {checkPnpmPresence, getFolderName} from "../../lib/util.js";
 
 export const command = "create [name]";
 export const desc = "Create a Saleor App template";
@@ -55,23 +54,6 @@ APP_URL=
   spinner.succeed('Starting ...\`pnpm run dev\`');
 
   await run('pnpm', ['run', 'dev'], { stdio: 'inherit', cwd: process.cwd() })
-}
-
-const getFolderName = async (name: string): Promise<string> => {
-  let folderName = name;
-  while (await dirExists(folderName)) {
-    folderName = folderName.concat('-0');
-  }
-  return folderName
-}
-
-const dirExists = async (name: string): Promise<boolean> => {
-  try {
-    await access(name);
-    return true
-  } catch (error) {
-    return false
-  }
 }
 
 export const middlewares = [

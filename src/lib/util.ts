@@ -11,6 +11,7 @@ import { API, GET, POST, Region } from "../lib/index.js";
 import { Options, ProjectCreate } from "../types.js";
 import { SaleorAppByID } from '../graphql/SaleorAppByID.js';
 import { Config } from './config.js';
+import {access} from "fs/promises";
 
 export const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 export const capitalize = (value: string) => value.charAt(0).toUpperCase() + value.slice(1);
@@ -692,4 +693,21 @@ export const countries: { [key: string]: string } = {
   "ZM": "Zambia",
   "ZW": "Zimbabwe",
   "AX": "Åland Islands"
+}
+
+export const getFolderName = async (name: string): Promise<string> => {
+  let folderName = name;
+  while (await dirExists(folderName)) {
+    folderName = folderName.concat('-0');
+  }
+  return folderName
+}
+
+export const dirExists = async (name: string): Promise<boolean> => {
+  try {
+    await access(name);
+    return true
+  } catch (error) {
+    return false
+  }
 }

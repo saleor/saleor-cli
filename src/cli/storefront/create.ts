@@ -1,13 +1,12 @@
 import { Arguments, CommandBuilder } from "yargs";
 import ora from "ora";
-import { access } from 'fs/promises';
 import replace from "replace-in-file";
 import sanitize from "sanitize-filename";
 
 import { API, GET, POST, getEnvironment } from "../../lib/index.js";
 import { StoreCreate } from "../../types.js";
 import { run } from "../../lib/common.js";
-import { capitalize, checkPnpmPresence, getSortedServices } from "../../lib/util.js";
+import {capitalize, checkPnpmPresence, getFolderName, getSortedServices} from "../../lib/util.js";
 import { createEnvironment } from "../env/create.js";
 import { useEnvironment } from "../../middleware/index.js";
 import chalk from "chalk";
@@ -138,21 +137,4 @@ export const createStorefront = async (argv: Arguments<StoreCreate>) => {
   console.log(chalk(chalk.bold('\n  Starting server on 0.0.0.0:3005, url: http://localhost:3005'), '\n'));
 
   await run('pnpm', ['next', 'dev', '--port', '3005'], { stdio: 'inherit', cwd: process.cwd() }, true);
-}
-
-const getFolderName = async (name: string): Promise<string> => {
-  let folderName = name;
-  while (await dirExists(folderName)) {
-    folderName = folderName.concat('-0');
-  }
-  return folderName
-}
-
-const dirExists = async (name: string): Promise<boolean> => {
-  try {
-    await access(name);
-    return true
-  } catch (error) {
-    return false
-  }
 }
